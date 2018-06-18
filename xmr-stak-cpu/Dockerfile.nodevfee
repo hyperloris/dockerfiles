@@ -1,0 +1,31 @@
+FROM ubuntu:16.04
+LABEL maintainer "hyperloris"
+
+ARG BUILD_PACKAGES=" \
+    build-essential \
+    ca-certificates \
+    cmake \
+    git \
+    libhwloc-dev \
+    libmicrohttpd-dev \
+    libssl-dev "
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    $BUILD_PACKAGES \
+&& rm -rf /var/lib/apt/lists/*
+
+WORKDIR /tmp
+
+RUN git clone https://github.com/fireice-uk/xmr-stak-cpu.git \
+    && cd xmr-stak-cpu/ \
+    && sed -i 's/fDevDonationLevel.*/fDevDonationLevel = 0.0;/' donate-level.h \
+    && cmake . \
+    && make install \
+    && cp bin/* /root/
+
+RUN apt-get remove -y $BUILD_PACKAGES
+RUN rm -rf /tmp/*
+
+WORKDIR /root
+
+ENTRYPOINT ["./xmr-stak-cpu"]
