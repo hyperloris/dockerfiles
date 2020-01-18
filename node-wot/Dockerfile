@@ -12,12 +12,13 @@ ENV NODEWOT_VERSION v0.7.0-SNAPSHOT.4
 
 RUN git clone --depth 1 --branch "${NODEWOT_VERSION}" https://github.com/eclipse/thingweb.node-wot.git /node-wot
 
-WORKDIR /node-wot
-
-RUN npm install \
-    && npm run build
+RUN cd node-wot \
+    && npm install \
+    && npm run build \
+    && npm run link
 
 EXPOSE 8080
 
-ENTRYPOINT [ "node", "./packages/cli/dist/cli.js" ]
-CMD [ "--help" ]
+WORKDIR /home/node
+
+ENTRYPOINT [ "wot-servient" ]
