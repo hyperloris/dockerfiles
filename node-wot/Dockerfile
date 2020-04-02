@@ -8,13 +8,14 @@ RUN apk add --no-cache \
 	make \
     python2
 
-ENV NODEWOT_VERSION v0.7.0-SNAPSHOT.4
+ENV NODEWOT_VERSION v0.7.0-SNAPSHOT.6
 
 RUN git clone --depth 1 --branch "${NODEWOT_VERSION}" https://github.com/eclipse/thingweb.node-wot.git /node-wot
 
 RUN cd node-wot \
     && npm install \
     && npm run build \
+    && node_modules/.bin/lerna exec "npm prune --production" \
     && npm run link
 
 EXPOSE 8080
@@ -22,3 +23,4 @@ EXPOSE 8080
 WORKDIR /home/node
 
 ENTRYPOINT [ "wot-servient" ]
+CMD [ "-h" ]
